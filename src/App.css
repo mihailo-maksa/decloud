@@ -1,5 +1,13 @@
 .App {
   text-align: center;
+  margin-bottom: 50px;
+}
+
+.App-dark {
+  text-align: center;
+  padding-bottom: 50px;
+  background-color: #0d1014;
+  color: #fff;
 }
 
 .App-logo {
@@ -35,4 +43,62 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.main-title {
+  font-size: 2.75em;
+  padding-top: 35px;
+}
+
+.stat-item {
+  font-size: 1.1em;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.my-files {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+table {
+  border-radius: 10px;
+  border-color: #fff;
+}
+
+tbody {
+  border-top: 1px solid #0d6efd !important;
+}
+
+thead {
+  border-color: #0d6efd !important;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.clipboard {
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.theme-picker-icon {
+  font-size: 1.5em;
+  cursor: pointer;
 }
