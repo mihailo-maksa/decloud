@@ -16,10 +16,15 @@ interface TableRowProps {
   fileInfo: File
 }
 
+interface StatusInfo {
+  status: string
+  dateCreated: string
+}
+
 const App: React.FC<AppProps> = (): JSX.Element => {
   const [address, setAddress] = useState<string>('')
   const [files, setFiles] = useState<FileList | any>([])
-  const [fileInfoArray, setFileInfoArray] = useState<File[]>([])
+  const [fileInfoArray, setFileInfoArray] = useState<File[] | any[]>([])
   const [, setIsLoggedIn] = useState<boolean>(false)
   const [totalSize, setTotalSize] = useState<number>(0)
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false)
@@ -87,7 +92,7 @@ const App: React.FC<AppProps> = (): JSX.Element => {
     }
   }
 
-  const uploadFile = async () => {
+  const uploadFiles = async () => {
     try {
       const fileInput = document.querySelector(
         "input[type='file']",
@@ -104,10 +109,22 @@ const App: React.FC<AppProps> = (): JSX.Element => {
       rootCidArray.push(currentRootCid)
       localStorage.setItem('rootCidArray', JSON.stringify(rootCidArray))
 
-      alert('File uploaded successfully!')
+      alert(
+        fileInput.files?.length === 1
+          ? `File uploaded successfully!`
+          : `${fileInput.files?.length} files uploaded successfully!`,
+      )
       window.location.reload()
     } catch (error) {
-      alert('Something went wrong. Please try again!')
+      const fileInput = document.querySelector(
+        "input[type='file']",
+      ) as HTMLInputElement
+
+      if (!fileInput.files!.length) {
+        alert('No files chosen yet. Please choose some file(s) and try again!')
+      } else {
+        alert('Something went wrong. Please try again!')
+      }
       console.error(error)
     }
   }
@@ -133,6 +150,22 @@ const App: React.FC<AppProps> = (): JSX.Element => {
 
         setFileInfoArray(currentFilesArray)
 
+        const statusInfoArray: StatusInfo[] = []
+
+        await Promise.all(
+          filteredRootCidArray.map(async (rootCid: string) => {
+            const res = await client.status(rootCid)
+
+            const dateCreated = await res?.created
+            const status = (await res?.pins.length) ? 'Pinned' : 'Queued'
+
+            statusInfoArray.push({
+              status,
+              dateCreated: dateCreated as string,
+            })
+          }),
+        )
+
         const currentTotalSize = currentFilesArray.reduce(
           (acc: number, file: File) => acc + file.size,
           0,
@@ -152,7 +185,7 @@ const App: React.FC<AppProps> = (): JSX.Element => {
         <td>
           {
             //@ts-ignore
-            formatDate(fileInfo.lastModifiedDate)
+            formatDate(fileInfo.lastModified, 'date')
           }
         </td>
         <td>{fileInfo.name}</td>
@@ -176,14 +209,14 @@ const App: React.FC<AppProps> = (): JSX.Element => {
             title="Copy to CID to Clipboard"
             onClick={(e: React.MouseEvent<HTMLElement, MouseEvent>) =>
               //@ts-ignore
-              copyToClipboard(e, fileInfo.cid)
+              copyToClipboard(e, fileInfo.cid, 'File CID copied to clipboard!')
             }
           />
         </td>
         <td>
           {
             //@ts-ignore
-            fileInfo.pinStatus
+            fileInfo.size ? 'Pinned' : 'Queued'
           }
         </td>
         <td>{formatFileSize(fileInfo.size)}</td>
@@ -197,13 +230,21 @@ const App: React.FC<AppProps> = (): JSX.Element => {
 
       <div className="theme-picker mb-4">
         {isDarkMode ? (
-          <i className="fas fa-sun theme-picker-icon" onClick={switchTheme} />
+          <i
+            className="fas fa-sun theme-picker-icon"
+            title="Switch to Light Mode"
+            onClick={switchTheme}
+          />
         ) : (
-          <i className="fas fa-moon theme-picker-icon" onClick={switchTheme} />
+          <i
+            className="fas fa-moon theme-picker-icon"
+            title="Switch to Dark Mode"
+            onClick={switchTheme}
+          />
         )}
       </div>
 
-      {localStorage.getItem('signature') !== '' ? (
+      {localStorage.getItem('signature') ? (
         <div className="app-container">
           <div className="personal-stats mb-5">
             {address && (
@@ -233,7 +274,7 @@ const App: React.FC<AppProps> = (): JSX.Element => {
                   handleChange(e)
                 }
                 required
-                multiple={true}
+                multiple={false}
                 className="form-control"
               />
             </div>
@@ -241,7 +282,7 @@ const App: React.FC<AppProps> = (): JSX.Element => {
               <button
                 className="btn btn-primary bold"
                 type="button"
-                onClick={uploadFile}
+                onClick={uploadFiles}
               >
                 <i className="fas fa-cloud-upload" /> Upload Files
               </button>
@@ -252,27 +293,34 @@ const App: React.FC<AppProps> = (): JSX.Element => {
             <h2 className="subtitle bold mb-4">My Files</h2>
 
             <div className="file-list">
-              <table
-                className={`table table-bordered ${
-                  isDarkMode ? 'table-dark' : ''
-                }`}
-              >
-                <thead>
-                  <tr>
-                    <th scope="col">Date</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">CID</th>
-                    <th scope="col">Pin Status</th>
-                    <th scope="col">Size</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {fileInfoArray.map((fileInfo: File) => (
-                    //@ts-ignore
-                    <TableRow key={fileInfo.cid} fileInfo={fileInfo} />
-                  ))}
-                </tbody>
-              </table>
+              {fileInfoArray.length > 0 ? (
+                <table
+                  className={`table table-bordered ${
+                    isDarkMode ? 'table-dark' : ''
+                  }`}
+                >
+                  <thead>
+                    <tr>
+                      <th scope="col">Date</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">CID</th>
+                      <th scope="col">Pin Status</th>
+                      <th scope="col">Size</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {fileInfoArray.map((fileInfo: File) => (
+                      //@ts-ignore
+                      <TableRow key={fileInfo.cid} fileInfo={fileInfo} />
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p className="no-files">
+                  No files yet. Your files will appear here once you upload
+                  them.
+                </p>
+              )}
             </div>
           </div>
         </div>

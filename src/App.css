@@ -6,6 +6,7 @@
 .App-dark {
   text-align: center;
   padding-bottom: 50px;
+  height: 100vh;
   background-color: #0d1014;
   color: #fff;
 }
@@ -51,7 +52,7 @@
 
 .main-title {
   font-size: 2.75em;
-  padding-top: 35px;
+  padding-top: 38px;
 }
 
 .stat-item {
@@ -101,4 +102,15 @@ a:hover {
 .theme-picker-icon {
   font-size: 1.5em;
   cursor: pointer;
+}
+
+.no-files {
+  font-size: 1.1em;
+}
+
+@media screen and (max-width: 635px) {
+  .my-files {
+    width: 80%;
+    margin: auto;
+  }
 }

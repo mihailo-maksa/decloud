@@ -1,5 +1,8 @@
-export const MESSAGE: string =
-  'Welcome to the DeCloud! Please sign this message to start uploading files to the IPFS.'
+export const MESSAGE: string = `
+Welcome to DeCloud! 
+
+Please sign this message to start uploading files to the IPFS.
+`
 
 export const formatCid = (cid: string): string => {
   return `${cid.substr(0, 6).toString()}...${cid
@@ -7,8 +10,16 @@ export const formatCid = (cid: string): string => {
     .toString()}`
 }
 
-export const formatDate = (date: number | string): string =>
-  new Date(date).toLocaleString()
+export const formatDate = (
+  date: number | string,
+  type: 'date' | 'datetime',
+): string | undefined => {
+  if (type === 'datetime') {
+    return new Date(date).toLocaleString()
+  } else if (type === 'date') {
+    return new Date(date).toLocaleDateString()
+  }
+}
 
 export const formatFileSize = (size: number): string => {
   const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
@@ -23,6 +34,7 @@ export const formatFileSize = (size: number): string => {
 export const copyToClipboard = (
   e: React.MouseEvent<HTMLElement, MouseEvent>,
   cid: string,
+  msg: string,
 ): void => {
   e.preventDefault()
 
@@ -36,4 +48,6 @@ export const copyToClipboard = (
 
   document.execCommand('copy')
   document.body.removeChild(el)
+
+  alert(msg)
 }
