@@ -274,7 +274,7 @@ const App: React.FC<AppProps> = (): JSX.Element => {
                   handleChange(e)
                 }
                 required
-                multiple={false}
+                multiple={true}
                 className="form-control"
               />
             </div>
