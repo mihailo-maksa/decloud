@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { Web3Storage } from 'web3.storage'
 import {
@@ -29,15 +29,9 @@ const App: React.FC<AppProps> = (): JSX.Element => {
   const [totalSize, setTotalSize] = useState<number>(0)
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false)
 
-  const client: Web3Storage = useMemo(
-    () =>
-      new Web3Storage({
-        token: process.env.REACT_APP_WEB3_STORAGE_TOKEN as string,
-      }),
-    [],
-  )
-
-  console.log(process.env.REACT_APP_WEB3_STORAGE_TOKEN)
+  const client: Web3Storage = new Web3Storage({
+    token: process.env.REACT_APP_WEB3_STORAGE_TOKEN as string,
+  })
 
   const signUp = async () => {
     try {
@@ -179,7 +173,7 @@ const App: React.FC<AppProps> = (): JSX.Element => {
 
     fetchFiles()
     // eslint-disable-next-line
-  }, [client])
+  }, [])
 
   const TableRow: React.FC<TableRowProps> = ({ fileInfo }): JSX.Element => {
     return (
