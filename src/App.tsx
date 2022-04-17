@@ -37,6 +37,8 @@ const App: React.FC<AppProps> = (): JSX.Element => {
     [],
   )
 
+  console.log(process.env.REACT_APP_WEB3_STORAGE_TOKEN)
+
   const signUp = async () => {
     try {
       const currentProvider = new ethers.providers.Web3Provider(window.ethereum)
