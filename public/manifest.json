@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "DeCloud",
+  "name": "A simple dapp for uploading & storing files on the IPFS",
   "icons": [
     {
       "src": "favicon.ico",
